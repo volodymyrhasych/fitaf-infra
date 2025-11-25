@@ -111,17 +111,23 @@ resource "aws_ecs_service" "fitaf_service" {
   cluster         = aws_ecs_cluster.fitaf_cluster.id
   launch_type     = "FARGATE"
   desired_count   = 1
-  task_definition = aws_ecs_task_definition.fitaf_task.arn
+
+  # ВАЖЛИВО: використовуємо існуючий task definition
+  task_definition = aws_ecs_task_definition.fitaf_site.arn
 
   network_configuration {
     subnets          = var.public_subnet_ids
-    security_groups  = [aws_security_group.fitaf_ecs_sg.id]
+    # ВАЖЛИВО: SG, який ти створив для ECS
+    security_groups  = [aws_security_group.ecs_service_sg.id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.fitaf_target_group.arn
-    container_name   = "vova-site"
+    # ВАЖЛИВО: target group, який у тебе реально існує
+    target_group_arn = aws_lb_target_group.fitaf_tg.arn
+
+    # МАЄ збігатися з name у container_definitions
+    container_name   = "fitaf-site"
     container_port   = 80
   }
 
