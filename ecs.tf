@@ -109,15 +109,24 @@ resource "aws_ecs_task_definition" "fitaf_site" {
 resource "aws_ecs_service" "fitaf_service" {
   name            = "fitaf-service"
   cluster         = aws_ecs_cluster.fitaf_cluster.id
-  task_definition = aws_ecs_task_definition.fitaf_site.arn
   launch_type     = "FARGATE"
   desired_count   = 1
+  task_definition = aws_ecs_task_definition.fitaf_task.arn
 
   network_configuration {
-    subnets         = var.private_subnet_ids
-    security_groups = [var.ecs_sg_id]
-    assign_public_ip = false
+    subnets         = var.public_subnet_ids      # ті самі два сабнети, що ми задали в terraform.tfvars
+    security_groups = [aws_security_group.fitaf_ecs_sg.id]  # НОВИЙ SG з sg.tf
+    assign_public_ip = true
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.fitaf_target_group.arn
+    container_name   = "vova-site"   # залиш свій поточний container_name, якщо інший
+    container_port   = 80
+  }
+
+  propagate_tags = "TASK_DEFINITION"
+}
 
   load_balancer {
     target_group_arn = aws_lb_target_group.fitaf_tg.arn
