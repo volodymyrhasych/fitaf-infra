@@ -16,11 +16,6 @@ terraform {
     }
   }
 }
-
-provider "aws" {
-  region = var.aws_region
-}
-
 # ===========================
 #  ECR Repository for FITAF site
 # ===========================
