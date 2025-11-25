@@ -29,7 +29,7 @@ resource "aws_lb_target_group" "fitaf_tg" {
 resource "aws_lb" "fitaf_alb" {
   name               = "fitaf-alb"
   load_balancer_type = "application"
-  security_groups    = [var.alb_sg_id]
+  security_groups = [aws_security_group.fitaf_alb_sg.id]
   subnets            = var.public_subnet_ids
 
   tags = {
