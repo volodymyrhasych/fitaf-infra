@@ -20,21 +20,6 @@ terraform {
 #  ECR Repository for FITAF site
 # ===========================
 
-resource "aws_ecr_repository" "fitaf_site" {
-  name                 = "fitaf-site"
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  tags = {
-    Project   = "FitAF"
-    Service   = "Site"
-    ManagedBy = "Terraform"
-  }
-}
-
 provider "aws" {
   region = var.aws_region
 }
