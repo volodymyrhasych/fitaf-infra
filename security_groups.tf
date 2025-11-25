@@ -63,3 +63,30 @@ resource "aws_security_group" "ecs_service_sg" {
     ManagedBy = "Terraform"
   }
 }
+resource "aws_security_group" "fitaf_alb_sg" {
+  name        = "fitaf-alb-sg"
+  description = "Security group for FITAF Application Load Balancer"
+  vpc_id      = var.vpc_id
+
+  # ALB приймає HTTP з інтернету
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Дозволяємо будь-який вихідний трафік
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Project   = "FitAF"
+    ManagedBy = "Terraform"
+    Type      = "alb-sg"
+  }
+}
