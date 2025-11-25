@@ -114,20 +114,18 @@ resource "aws_ecs_service" "fitaf_service" {
   task_definition = aws_ecs_task_definition.fitaf_task.arn
 
   network_configuration {
-    subnets         = var.public_subnet_ids          # ті самі 2 сабнети
-    security_groups = [aws_security_group.fitaf_ecs_sg.id]  # новий SG для ECS
+    subnets          = var.public_subnet_ids
+    security_groups  = [aws_security_group.fitaf_ecs_sg.id]
     assign_public_ip = true
   }
 
-  # Прив’язуємо сервіс до target group ALB
   load_balancer {
-    target_group_arn = aws_lb_target_group.fitaf_tg.arn
-    container_name   = "vova-site"   # сюди те саме ім’я контейнера, що в task definition
+    target_group_arn = aws_lb_target_group.fitaf_target_group.arn
+    container_name   = "vova-site"
     container_port   = 80
   }
 
   propagate_tags = "TASK_DEFINITION"
-}
 
   depends_on = [
     aws_lb_listener.fitaf_http_listener
