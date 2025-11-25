@@ -15,3 +15,90 @@ resource "aws_ecs_cluster" "fitaf_cluster" {
     ManagedBy = "Terraform"
   }
 }
+
+# ===========================
+# IAM role for ECS task execution
+# ===========================
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "fitaf-ecs-task-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Project   = "FitAF"
+    ManagedBy = "Terraform"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_attach" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# ===========================
+# CloudWatch Logs for app
+# ===========================
+
+resource "aws_cloudwatch_log_group" "fitaf_app" {
+  name              = "/ecs/fitaf-site"
+  retention_in_days = 14
+
+  tags = {
+    Project   = "FitAF"
+    ManagedBy = "Terraform"
+  }
+}
+
+# ===========================
+# ECS Task Definition
+# ===========================
+
+resource "aws_ecs_task_definition" "fitaf_site" {
+  family                   = "fitaf-site-task"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"   # 0.25 vCPU
+  memory                   = "512"   # 0.5 GB
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "fitaf-site"
+      image     = "${aws_ecr_repository.fitaf_site.repository_url}:latest"
+      essential = true
+
+      portMappings = [
+        {
+          containerPort = 80
+          protocol      = "tcp"
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.fitaf_app.name
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+    }
+  ])
+
+  tags = {
+    Project   = "FitAF"
+    ManagedBy = "Terraform"
+  }
+}
