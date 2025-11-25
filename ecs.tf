@@ -136,19 +136,3 @@ resource "aws_ecs_service" "fitaf_service" {
     ManagedBy = "Terraform"
   }
 }
-
-
-
-  propagate_tags = "TASK_DEFINITION"
-}
-
-
-  depends_on = [
-    aws_lb_listener.fitaf_http_listener
-  ]
-
-  tags = {
-    Project   = "FitAF"
-    ManagedBy = "Terraform"
-  }
-}
