@@ -11,7 +11,7 @@ resource "aws_security_group" "ecs_service_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
+    security_groups = [aws_security_group.fitaf_alb_sg.id]
   }
 
   # Вихідний трафік – куди завгодно (для оновлень, логів і т.д.)
