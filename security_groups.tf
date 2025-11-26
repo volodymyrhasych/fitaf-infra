@@ -1,38 +1,3 @@
-# =====================================
-# Security Groups for ALB and ECS
-# =====================================
-
-# SG для ALB (приймає HTTP з інтернету)
-resource "aws_security_group" "alb_sg" {
-  name        = "fitaf-alb-sg"
-  description = "Security group for FITAF ALB"
-  vpc_id      = var.vpc_id
-
-  # HTTP з усього інтернету
-  ingress {
-    description = "Allow HTTP from anywhere"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # TODO: пізніше додамо 443, коли заведемо HTTPS
-
-  # Вихідний трафік – куди завгодно
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Project   = "FitAF"
-    Component = "ALB"
-    ManagedBy = "Terraform"
-  }
-}
 
 # SG для ECS tasks (приймає трафік тільки від ALB)
 resource "aws_security_group" "ecs_service_sg" {
