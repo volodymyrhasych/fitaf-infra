@@ -36,3 +36,7 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -input=false
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -input=false -auto-approve
