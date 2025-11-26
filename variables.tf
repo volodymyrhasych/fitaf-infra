@@ -25,3 +25,7 @@ variable "private_subnet_ids" {
 variable "ecs_sg_id" {
   type = string
 }
+variable "alert_email" {
+  description = "Email для отримання продакшн-алармів"
+  type        = string
+}
