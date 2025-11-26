@@ -6,6 +6,8 @@ alb_sg_id         = "sgr-0b47804b9228735ed"
 
 ecs_sg_id = "sgr-0b47804b9228735ed"
 
+alert_email = "vladimirgasich@gmail.com"
+
 public_subnet_ids = [
   "subnet-0a4c44d7ea9deb9b3",
   "subnet-0f32168eecef4bd90",
