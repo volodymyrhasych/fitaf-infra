@@ -15,17 +15,17 @@ resource "aws_s3_bucket" "alb_logs" {
 resource "aws_s3_bucket_policy" "alb_logs" {
   bucket = aws_s3_bucket.alb_logs.id
 
-  policy = jsonencode({
+policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AWSALBWrite"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::127311923021:root" # ELB account ID для us-east-1
+          Service = "logdelivery.elasticloadbalancing.amazonaws.com"
         }
         Action = "s3:PutObject"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        # prefix "alb" — такий самий, як у ресурсі aws_lb.access_logs
+        Resource = "${aws_s3_bucket.alb_logs.arn}/alb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
