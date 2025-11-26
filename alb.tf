@@ -32,6 +32,12 @@ resource "aws_lb" "fitaf_alb" {
   security_groups = [aws_security_group.fitaf_alb_sg.id]
   subnets            = var.public_subnet_ids
 
+  access_logs {
+    bucket  = aws_s3_bucket.alb_logs.bucket
+    prefix  = "alb"
+    enabled = true
+  }
+
   tags = {
     Project   = "FitAF"
     ManagedBy = "Terraform"
